@@ -1,5 +1,14 @@
-<ul>
-	{% for cluster in clusters %}
-		<img src="{{cluster.image}}" />
-	{% endfor %}
-</ul>
+<html>
+<head>
+	<title>Events Visualization</title>
+	<script type="text/javascript" src="/static/javascript/visualization.js"></script>
+</head>
+<body>
+	<ul>
+		{% for cluster in clusters %}
+			<img src="{{cluster.image}}" />
+		{% endfor %}
+	</ul>
+</body>
+</html>
+

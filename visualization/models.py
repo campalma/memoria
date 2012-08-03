@@ -1,5 +1,7 @@
 from django.db import models
 from apis import GoogleNews
+from datetime import datetime
+from time import strptime
 
 class Cluster(models.Model):
 	image = models.URLField(max_length=500)
@@ -23,4 +25,48 @@ class Article(models.Model):
 
 	@staticmethod
 	def collect_with_google():
-		return GoogleNews.collect()
+		google_news = GoogleNews.collect()
+		for google_article in google_news:
+			cluster = Cluster()
+			cluster.image = google_article["image"]["url"]
+			cluster.relevancy = len(google_article["relatedStories"])
+			cluster.is_local = False
+			cluster.location = google_article["location"]
+			cluster.continent_location = ""
+			cluster.date = format_date(google_article["publishedDate"])
+			cluster.save()
+
+			article = Article()
+			article.title = google_article["titleNoFormatting"]
+			article.url = google_article["unescapedUrl"]
+			article.topic = google_article["topic"]
+			article.location = google_article["location"]
+			article.publisher = google_article["publisher"]
+			if "content" in google_article:
+				article.content = google_article["content"]
+			else:
+				article.content = ""
+			article.published_date = format_date(google_article["publishedDate"])
+			article.cluster = cluster
+			article.save()
+
+			article_related_stories = google_article["relatedStories"]
+			for related in article_related_stories:
+				article = Article()
+				article.title = related["titleNoFormatting"]
+				article.url = related["unescapedUrl"]
+				article.topic = related["topic"]
+				article.location = related["location"]
+				article.publisher = related["publisher"]
+				if "content" in related:
+					article.content = related["content"]
+				else:
+					article.content = ""
+				article.published_date = format_date(related["publishedDate"])
+				article.cluster = cluster
+				article.save()
+
+
+def format_date(google_date):
+	t = strptime(google_date[:-6], "%a, %d %b %Y %H:%M:%S")
+	return datetime(*t[:6]).strftime('%Y-%m-%d %H:%M:%S')

@@ -31,10 +31,10 @@ def collect_all_news_from_topic(topic_key):
 		api_result = simplejson.loads(json)
 		news = api_result["responseData"]["results"]
 		for article in news:
+			article["topic"] = TOPICS[topic_key]
+			map(lambda x: add_topic(x, TOPICS[topic_key]), article["relatedStories"])
 			results.append(article)
 	return results
-
-
 
 def get_topic_starts(topic_key):
 	starts = []
@@ -47,3 +47,6 @@ def get_topic_starts(topic_key):
 		starts.append(page["start"])
 	
 	return starts
+
+def add_topic(article, topic):
+	article["topic"] = topic

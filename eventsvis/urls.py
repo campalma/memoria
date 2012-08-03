@@ -5,6 +5,7 @@ from django.conf.urls import patterns, include, url
 # admin.autodiscover()
 
 urlpatterns = patterns('',
+	url(r'^collect/', 'visualization.views.collect'),
     # Examples:
     # url(r'^$', 'eventsvis.views.home', name='home'),
     # url(r'^eventsvis/', include('eventsvis.foo.urls')),

@@ -1,6 +1,8 @@
 from django.http import HttpResponse
+from visualization.models import Article
 
 # Create your views here.
 
 def collect(request):
-	return HttpResponse("Hello, world. You're at the poll index.")
+	response = Article.collect_with_google()
+	return HttpResponse(response)

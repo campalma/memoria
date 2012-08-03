@@ -5,7 +5,6 @@ var axisHeight = 100;
 var maxRelevancy = 100;
 var x = d3.time.scale().range([0, width]);
 var xAxis = d3.svg.axis().scale(x).tickSize(-height).tickSubdivide(true);
-var colors = new Array("#B52C38","#EBD1B0","#536682","#D9964B","#DE6846", "#DCEBDD")
 var events;
 var lastClicked = null;
 
@@ -55,17 +54,17 @@ function displayEvents(){
 			localAttribute = "global";
 		}
 
+		console.log(event.fields.topic)
+
 		var article = svg.append("circle")
 		   				 .attr("id", key)
 		   				 .attr("cx", x(new Date(event.fields.date)))
 		   				 .attr("cy", Math.random()*height)
 		   				 .attr("r", 10*event.fields.relevancy)
 		   				 .attr("class", localAttribute)
-						 .style("fill", getColor(event.fields.continent_location))
+						 .style("fill", getColor(event.fields.topic))
 						 .style("stroke-width", 2)
 						 .style("stroke", strokeColor(event));
-
-						console.log(x(new Date(event.fields.date)), event.pk);
 
 		   				 $("#"+key).click(function(){
 
@@ -111,34 +110,18 @@ function strokeColor(event){
 /*
 	TODO: Someday, i'll get continent location, now color is random. It must be changed.
 */
-function getColor(continent){
-	/*
-	switch(continent){
-		case("Europe"):
-			return colors[0];
-			break;
-
-		case("America"):
-			return colors[1];
-			break;
-
-		case("Asia"):
-			return colors[2];
-			break;
-
-		case("Africa"):
-			return colors[3];
-			break;
-
-		case("Antartica"):
-			return colors[4];
-			break;
-
-		case("Oceania"):
-			return colors[5];
-			break;
+function getColor(topic){
+	colors = {
+		"Top Headlines": "#90AEC6",
+		"World": "#FF8F00",
+		"Business": "#E7E4D3",
+		"Nation": "#D72729",
+		"Science and Technology": "#471605",
+		"Elections": "#E3A6EC",
+		"Politics": "#DDC0B2",
+		"Entertainment": "#3D4C53",
+		"Sports": "#669966",
+		"Health": "#D13D94"
 	}
-	return colors[0];
-	*/
-	return colors[Math.floor(Math.random() * 6)];
+	return colors[topic];
 }

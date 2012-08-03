@@ -19,7 +19,7 @@ TOPICS = {
 }
 
 def collect():
-	result = collect_all_news_from_topic("s")
+	result = collect_all_news_from_topic("t")
 	return result
 
 def collect_all_news_from_topic(topic_key):
@@ -34,7 +34,6 @@ def collect_all_news_from_topic(topic_key):
 		for article in news:
 			if not (article["titleNoFormatting"] in collected_titles):
 				article["topic"] = TOPICS[topic_key]
-				map(lambda x: add_topic(x, TOPICS[topic_key]), article["relatedStories"])
 				results.append(article)
 				collected_titles.append(article["titleNoFormatting"])
 	return results

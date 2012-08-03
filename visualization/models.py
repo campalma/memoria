@@ -7,6 +7,7 @@ class Cluster(models.Model):
 	image = models.URLField(max_length=500)
 	relevancy = models.IntegerField()
 	is_local = models.BooleanField()
+	topic = models.CharField(max_length=100)
 	location = models.CharField(max_length=200)
 	continent_location = models.CharField(max_length=100)
 	added_date = models.DateTimeField(auto_now_add=True)
@@ -15,7 +16,6 @@ class Cluster(models.Model):
 class Article(models.Model):
 	title = models.CharField(max_length=500)
 	url = models.URLField(max_length=500)
-	topic = models.CharField(max_length=100)
 	location = models.CharField(max_length=200)
 	publisher = models.CharField(max_length=200)
 	content = models.CharField(max_length=1000)
@@ -30,6 +30,7 @@ class Article(models.Model):
 			cluster = Cluster()
 			cluster.image = google_article["image"]["url"]
 			cluster.relevancy = len(google_article["relatedStories"])
+			cluster.topic = google_article["topic"]
 			cluster.is_local = False
 			cluster.location = google_article["location"]
 			cluster.continent_location = ""
@@ -39,7 +40,6 @@ class Article(models.Model):
 			article = Article()
 			article.title = google_article["titleNoFormatting"]
 			article.url = google_article["unescapedUrl"]
-			article.topic = google_article["topic"]
 			article.location = google_article["location"]
 			article.publisher = google_article["publisher"]
 			if "content" in google_article:
@@ -55,7 +55,6 @@ class Article(models.Model):
 				article = Article()
 				article.title = related["titleNoFormatting"]
 				article.url = related["unescapedUrl"]
-				article.topic = related["topic"]
 				article.location = related["location"]
 				article.publisher = related["publisher"]
 				if "content" in related:

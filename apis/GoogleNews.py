@@ -2,6 +2,8 @@ import urllib2
 import simplejson
 
 API_URL = "https://ajax.googleapis.com/ajax/services/search/news?v=%(version)s&rsz=%(rsz)s&topic=%(topic)s&start=%(start)s"
+RSZ = "8"
+VERSION = "1.0"
 
 TOPICS = {
 	"h": "Top Headlines",
@@ -17,11 +19,31 @@ TOPICS = {
 }
 
 def collect():
-	result = []
-	url = API_URL % {"version": "1.0", "rsz": "8", "topic": "h", "start": "0"}
+	result = collect_all_news_from_topic("s")
+	return result
+
+def collect_all_news_from_topic(topic_key):
+	results = []
+	starts = get_topic_starts(topic_key)
+	for start in starts:
+		url = API_URL % {"version": VERSION, "rsz": RSZ, "topic": topic_key, "start": start}
+		json = urllib2.urlopen(url).read()
+		api_result = simplejson.loads(json)
+		news = api_result["responseData"]["results"]
+		for article in news:
+			results.append(article)
+	return results
+
+
+
+def get_topic_starts(topic_key):
+	starts = []
+	url = API_URL % {"version": VERSION, "rsz": RSZ, "topic": topic_key, "start": "0"}
 	json = urllib2.urlopen(url).read()
 	api_result = simplejson.loads(json)
-	news = api_result["responseData"]["results"]
-	for article in news:
-		result.append(article)
-	return result
+	pages = api_result["responseData"]["cursor"]["pages"]
+
+	for page in pages:
+		starts.append(page["start"])
+	
+	return starts

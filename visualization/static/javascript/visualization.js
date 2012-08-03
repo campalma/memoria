@@ -79,9 +79,11 @@ function displayEvents(){
 								url: "/api/clusternewsquery/"+events[this.id].pk,
 								dataType: "json",
 								success: function(data){
-									$("#info")[0].innerHTML = "</br>";
+
+									$("#news")[0].innerHTML = "</br>";
+									$("#image")[0].innerHTML = "<img src='"+events[$(lastClicked).attr("id")].fields.image+"'/>";
 									$.each(data, function(key, article){
-										$("#info").append(article.fields.published_date+" <a href='"+article.fields.url+"'>"+article.fields.title +" ["+article.fields.publisher+"]"+"</a><br/>");
+										$("#news").append(article.fields.published_date+" <a href='"+article.fields.url+"'>"+article.fields.title +" ["+article.fields.publisher+"]"+"</a><br/>");
 									});
 								}
 							});

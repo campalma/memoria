@@ -19,7 +19,7 @@ TOPICS = {
 }
 
 def collect():
-	result = collect_all_news_from_topic("t")
+	result = collect_all_news_from_topic("s")
 	return result
 
 def collect_all_news_from_topic(topic_key):

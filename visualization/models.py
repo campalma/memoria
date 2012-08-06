@@ -2,6 +2,7 @@ from django.db import models
 from apis import GoogleNews
 from datetime import datetime
 from time import strptime
+from apis import Placemaker
 
 class Cluster(models.Model):
 	image = models.URLField(max_length=500)
@@ -27,9 +28,16 @@ class Article(models.Model):
 	def collect_with_google():
 		google_news = GoogleNews.collect()
 		for google_article in google_news:
+			cluster_content = ""
 			cluster = Cluster()
-			cluster.image = google_article["image"]["url"]
-			cluster.relevancy = len(google_article["relatedStories"])
+			if("image" in google_article):
+				cluster.image = google_article["image"]["url"]
+			else:
+				cluster.image = "http://panhandletickets.com/images/not_available.jpg"
+			if("relatedStories" in google_article):
+				cluster.relevancy = len(google_article["relatedStories"]) + 1
+			else:
+				cluster.relevancy = 1
 			cluster.topic = google_article["topic"]
 			cluster.is_local = False
 			cluster.location = google_article["location"]
@@ -42,28 +50,36 @@ class Article(models.Model):
 			article.url = google_article["unescapedUrl"]
 			article.location = google_article["location"]
 			article.publisher = google_article["publisher"]
+			cluster_content += google_article["titleNoFormatting"] + " "
 			if "content" in google_article:
 				article.content = google_article["content"]
+				cluster_content += google_article["content"]+ " "
 			else:
 				article.content = ""
 			article.published_date = format_date(google_article["publishedDate"])
 			article.cluster = cluster
 			article.save()
+			if("relatedStories" in google_article):
+				article_related_stories = google_article["relatedStories"]
+				for related in article_related_stories:
+					article = Article()
+					article.title = related["titleNoFormatting"]
+					article.url = related["unescapedUrl"]
+					article.location = related["location"]
+					article.publisher = related["publisher"]
+					if "content" in related:
+						article.content = related["content"]
+						cluster_content += related["content"]+ " "
+					else:
+						article.content = ""
+					article.published_date = format_date(related["publishedDate"])
+					article.cluster = cluster
+					article.save()
+			clusters_locations = Placemaker.get_continent_from_string(cluster_content)
+			if len(clusters_locations) > 0:
+				cluster.continent_location = clusters_locations[0]
+				cluster.save()
 
-			article_related_stories = google_article["relatedStories"]
-			for related in article_related_stories:
-				article = Article()
-				article.title = related["titleNoFormatting"]
-				article.url = related["unescapedUrl"]
-				article.location = related["location"]
-				article.publisher = related["publisher"]
-				if "content" in related:
-					article.content = related["content"]
-				else:
-					article.content = ""
-				article.published_date = format_date(related["publishedDate"])
-				article.cluster = cluster
-				article.save()
 
 
 def format_date(google_date):

@@ -16,7 +16,7 @@ def visualize(request):
 	return render_to_response("visualize.html", {})
 
 def clusters_query(request):
-	clusters = Cluster.objects.all().order_by("-date", "-relevancy")[:50]
+	clusters = Cluster.objects.all().order_by("-date")[:50]
 	json = serializers.serialize("json", clusters)
 	return HttpResponse(json, mimetype='application/json')
 

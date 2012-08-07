@@ -1,12 +1,27 @@
-var svg, axisSvg, info;
+var svg, axisSvg, legend, info;
 var width = 800;
-var height = 650;
+var height = 600;
+var legendHeight = 30;
 var axisHeight = 100;
 var maxRelevancy = 100;
 var x = d3.time.scale().range([0, width]);
 var xAxis = d3.svg.axis().scale(x).tickSize(-height).tickSubdivide(true);
 var events;
 var lastClicked = null;
+
+topicColors = {
+	"Top Headlines": "#90AEC6",
+	"World": "#FF8F00",
+	"Business": "#E7E4D3",
+	"Nation": "#D72729",
+	"Science and Technology": "#471605",
+	"Elections": "#E3A6EC",
+	"Politics": "#DDC0B2",
+	"Entertainment": "#3D4C53",
+	"Sports": "#669966",
+	"Health": "#D13D94"
+}
+
 continentsPosition = {
 		"Africa": 0,
 		"Asia": 1,
@@ -25,11 +40,16 @@ function init(){
 			.attr("width", width)
 	      	.attr("height", height);
 
+	legend = d3.select("#legend")
+			   .attr("width", width)
+			   .attr("height", legendHeight);
+
 	axisSvg = d3.select("#axis")
 				.attr("width", width)
 				.attr("height", axisHeight);
 
 	drawLocationSeparations();
+	drawLegend();
 
 	$.ajax({
 		url: "/api/clustersquery",
@@ -76,7 +96,7 @@ function displayEvents(){
 		   				 .attr("cy", getLocationPosition(event.fields.continent_location))
 		   				 .attr("r", 5*event.fields.relevancy)
 		   				 .attr("class", localAttribute)
-						 .style("fill", getColor(event.fields.topic))
+						 .style("fill", getTopicColor(event.fields.topic))
 						 .style("stroke-width", 2)
 						 .style("stroke", strokeColor(event));
 
@@ -144,18 +164,19 @@ function drawLocationSeparations(){
 	});
 }
 
-function getColor(topic){
-	colors = {
-		"Top Headlines": "#90AEC6",
-		"World": "#FF8F00",
-		"Business": "#E7E4D3",
-		"Nation": "#D72729",
-		"Science and Technology": "#471605",
-		"Elections": "#E3A6EC",
-		"Politics": "#DDC0B2",
-		"Entertainment": "#3D4C53",
-		"Sports": "#669966",
-		"Health": "#D13D94"
-	}
-	return colors[topic];
+function drawLegend(){
+	var position = 0;
+	$.each(topicColors, function(name, color){
+		legend.append("text")
+			  .attr("x", position)
+			  .attr("y", legendHeight/2)
+			  .attr("fill", color)
+			  .attr("font-size", 14)
+			  .text(name);
+		position = position + 8*name.length;
+	});
+}
+
+function getTopicColor(topic){
+	return topicColors[topic];
 }

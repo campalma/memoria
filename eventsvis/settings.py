@@ -120,7 +120,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'south',
+#    'south',
     'visualization'
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
@@ -141,13 +141,13 @@ LOGGING = {
 #            '()': 'django.utils.log.RequireDebugFalse'
 #        }
     },
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-    }
+#    'loggers': {
+#        'django.request': {
+#            'handlers': ['mail_admins'],
+#            'level': 'ERROR',
+#            'propagate': True,
+#        },
+#    }
 }
 
 try:

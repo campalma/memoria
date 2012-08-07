@@ -14,9 +14,11 @@ continentsPosition = {
 		"North America": 3,
 		"Oceania": 4,
 		"South America": 5,
-		"Antarctica": 6,
-		"": 7
+//		"Antarctica": 6,
+		"": 6,
+		"Unknown Location": 6,
 } 
+continentsCount = 7
 
 function init(){
 	svg = d3.select("#canvas")
@@ -120,12 +122,12 @@ function strokeColor(event){
 }
 
 function getLocationPosition(continent){
-	slotSize = height/8;
+	slotSize = height/continentsCount;
 	return slotSize*continentsPosition[continent] + Math.random()*slotSize;
 }
 
 function drawLocationSeparations(){
-	var slotSize = height/8
+	var slotSize = height/continentsCount
 	$.each(continentsPosition, function(key, value){
 		svg.append("line")
 		   .attr("x1", "0")
@@ -138,6 +140,7 @@ function drawLocationSeparations(){
 		   .attr("y", (slotSize*(value+1))-slotSize/2)
 		   .attr("fill", "black")
 		   .text(key);
+
 	});
 }
 

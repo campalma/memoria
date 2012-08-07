@@ -1,7 +1,7 @@
 import urllib2
 import simplejson
 
-API_URL = "https://ajax.googleapis.com/ajax/services/search/news?v=%(version)s&rsz=%(rsz)s&topic=%(topic)s&start=%(start)s"
+API_URL = "https://ajax.googleapis.com/ajax/services/search/news?v=%(version)s&rsz=%(rsz)s&topic=%(topic)s&start=%(start)s&ned=%(ned)s"
 RSZ = "8"
 VERSION = "1.0"
 
@@ -18,16 +18,21 @@ TOPICS = {
 	"m": "Health"
 }
 
-def collect():
-	result = collect_all_news_from_topic("s")
-	return result
+ZONES = ["us", "uk"]
 
-def collect_all_news_from_topic(topic_key):
+def collect():
+	result = []
+	for zone in ZONES:
+		for topic,v in TOPICS.iteritems():
+			result.extend(collect_all_news_from_topic(topic, zone))
+		return result
+
+def collect_all_news_from_topic(topic_key, zone):
 	results = []
 	collected_titles = []
-	starts = get_topic_starts(topic_key)
+	starts = get_topic_starts(topic_key, zone)
 	for start in starts:
-		url = API_URL % {"version": VERSION, "rsz": RSZ, "topic": topic_key, "start": start}
+		url = API_URL % {"version": VERSION, "rsz": RSZ, "topic": topic_key, "start": start, "ned": zone}
 		json = urllib2.urlopen(url).read()
 		api_result = simplejson.loads(json)
 		news = api_result["responseData"]["results"]
@@ -38,9 +43,9 @@ def collect_all_news_from_topic(topic_key):
 				collected_titles.append(article["titleNoFormatting"])
 	return results
 
-def get_topic_starts(topic_key):
+def get_topic_starts(topic_key, zone):
 	starts = []
-	url = API_URL % {"version": VERSION, "rsz": RSZ, "topic": topic_key, "start": "0"}
+	url = API_URL % {"version": VERSION, "rsz": RSZ, "topic": topic_key, "start": "0", "ned": zone}
 	json = urllib2.urlopen(url).read()
 	api_result = simplejson.loads(json)
 	pages = api_result["responseData"]["cursor"]["pages"]

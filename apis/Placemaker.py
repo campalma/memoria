@@ -22,10 +22,13 @@ def get_continent_from_string(string):
 				continents.append(transformations.cn_to_ctn(country))
 			except KeyError:
 				pass
-
+		print countries
+		print continents
 		return continents
 
 	else:
+		print []
+		print []
 		return []
 			
 def getLinkPlace(url):

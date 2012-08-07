@@ -13,11 +13,10 @@ def collect(request):
 	return HttpResponse(clusters)
 
 def visualize(request):
-	clusters = Cluster.objects.all()
-	return render_to_response("visualize.html", {"clusters": clusters})
+	return render_to_response("visualize.html", {})
 
 def clusters_query(request):
-	clusters = Cluster.objects.all().order_by("-relevancy")
+	clusters = Cluster.objects.all().order_by("-date")[:200]
 	json = serializers.serialize("json", clusters)
 	return HttpResponse(json, mimetype='application/json')
 

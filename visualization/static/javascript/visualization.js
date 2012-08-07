@@ -1,12 +1,22 @@
 var svg, axisSvg, info;
 var width = 800;
-var height = 600;
+var height = 650;
 var axisHeight = 100;
 var maxRelevancy = 100;
 var x = d3.time.scale().range([0, width]);
 var xAxis = d3.svg.axis().scale(x).tickSize(-height).tickSubdivide(true);
 var events;
 var lastClicked = null;
+continentsPosition = {
+		"Africa": 0,
+		"Asia": 1,
+		"Europe": 2,
+		"North America": 3,
+		"Oceania": 4,
+		"South America": 5,
+		"Antarctica": 6,
+		"": 7
+} 
 
 function init(){
 	svg = d3.select("#canvas")
@@ -16,6 +26,8 @@ function init(){
 	axisSvg = d3.select("#axis")
 				.attr("width", width)
 				.attr("height", axisHeight);
+
+	drawLocationSeparations();
 
 	$.ajax({
 		url: "/api/clustersquery",
@@ -59,8 +71,8 @@ function displayEvents(){
 		var article = svg.append("circle")
 		   				 .attr("id", key)
 		   				 .attr("cx", x(new Date(event.fields.date)))
-		   				 .attr("cy", Math.random()*height)
-		   				 .attr("r", 10*event.fields.relevancy)
+		   				 .attr("cy", getLocationPosition(event.fields.continent_location))
+		   				 .attr("r", 5*event.fields.relevancy)
 		   				 .attr("class", localAttribute)
 						 .style("fill", getColor(event.fields.topic))
 						 .style("stroke-width", 2)
@@ -100,16 +112,35 @@ function displayAxis(minDate, maxDate){
 
 function strokeColor(event){
 	if(event.fields.isLocal){
-		return "black";
+		return "";
 	}
 	else{
-		return "";
+		return "black";
 	}
 }
 
-/*
-	TODO: Someday, i'll get continent location, now color is random. It must be changed.
-*/
+function getLocationPosition(continent){
+	slotSize = height/8;
+	return slotSize*continentsPosition[continent] + Math.random()*slotSize;
+}
+
+function drawLocationSeparations(){
+	var slotSize = height/8
+	$.each(continentsPosition, function(key, value){
+		svg.append("line")
+		   .attr("x1", "0")
+		   .attr("y1", slotSize*(value+1)+"")
+		   .attr("x2", width+"")
+		   .attr("y2", slotSize*(value+1)+"")
+		   .style("stroke", "grey");
+		svg.append("text")
+		   .attr("x", "0")
+		   .attr("y", (slotSize*(value+1))-slotSize/2)
+		   .attr("fill", "black")
+		   .text(key);
+	});
+}
+
 function getColor(topic){
 	colors = {
 		"Top Headlines": "#90AEC6",

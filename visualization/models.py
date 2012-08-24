@@ -20,6 +20,7 @@ class Article(models.Model):
 	location = models.CharField(max_length=200)
 	publisher = models.CharField(max_length=200)
 	content = models.CharField(max_length=1000)
+	page = models.IntegerField()
 	published_date = models.DateTimeField()
 	added_date = models.DateTimeField(auto_now_add=True)
 	cluster = models.ForeignKey(Cluster)
@@ -50,6 +51,7 @@ class Article(models.Model):
 			article.url = google_article["unescapedUrl"]
 			article.location = google_article["location"]
 			article.publisher = google_article["publisher"]
+			article.page = google_article["page"]
 			cluster_content += google_article["titleNoFormatting"] + " "
 			if "content" in google_article:
 				article.content = google_article["content"]
@@ -67,6 +69,7 @@ class Article(models.Model):
 					article.url = related["unescapedUrl"]
 					article.location = related["location"]
 					article.publisher = related["publisher"]
+					article.page = google_article["page"]
 					if "content" in related:
 						article.content = related["content"]
 						cluster_content += related["content"]+ " "

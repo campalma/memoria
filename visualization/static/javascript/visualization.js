@@ -40,16 +40,11 @@ function init(){
 			.attr("width", width)
 	      	.attr("height", height);
 
-	legend = d3.select("#legend")
-			   .attr("width", width)
-			   .attr("height", legendHeight);
-
 	axisSvg = d3.select("#axis")
 				.attr("width", width)
 				.attr("height", axisHeight);
 
 	drawLocationSeparations();
-	drawLegend();
 
 	$.ajax({
 		url: "/api/clustersquery",
@@ -94,7 +89,7 @@ function displayEvents(){
 		   				 .attr("id", key)
 		   				 .attr("cx", x(new Date(event.fields.date)))
 		   				 .attr("cy", getLocationPosition(event.fields.continent_location))
-		   				 .attr("r", 5*event.fields.relevancy)
+		   				 .attr("r", event.fields.relevancy*5)
 		   				 .attr("class", localAttribute)
 						 .style("fill", getTopicColor(event.fields.topic))
 						 .style("stroke-width", 2)
@@ -161,19 +156,6 @@ function drawLocationSeparations(){
 		   .attr("fill", "black")
 		   .text(key);
 
-	});
-}
-
-function drawLegend(){
-	var position = 0;
-	$.each(topicColors, function(name, color){
-		legend.append("text")
-			  .attr("x", position)
-			  .attr("y", legendHeight/2)
-			  .attr("fill", color)
-			  .attr("font-size", 14)
-			  .text(name);
-		position = position + 8*name.length;
 	});
 }
 

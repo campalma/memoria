@@ -7,9 +7,31 @@
 		<script type="text/javascript" src="/static/javascript/visualization.js"></script>
 		<script type="text/javascript" src="/static/javascript/jquery.js"></script>
 		<link rel="stylesheet" href="/static/css/bootstrap.css" type="text/css" />
+		<link rel="stylesheet" href="/static/css/visualization.css" type="text/css" />
 	</head>
 	<body id="body" onload="init()">
 		<div class="container-fluid">
+			<div class="row-fluid">
+				<div class="navbar">
+  					<div class="navbar-inner">
+    					<div class="container">
+							<ul class="nav">
+  								<li><a href="#">All</a></li>
+								<li class="headlines"><a href="#">Top Headlines</a></li>
+								<li class="world"><a href="#">World</a></li>
+								<li class="business"><a href="#">Business</a></li>
+								<li class="nation"><a href="#">Nation</a></li>
+								<li class="science"><a href="#">Science and Technology</a></li>
+								<li class="elections"><a href="#">Elections</a></li>
+								<li class="politics"><a href="#">Politics</a></li>
+								<li class="entertainment"><a href="#">Entertainment</a></li>
+								<li class="sports"><a href="#">Sports</a></li>
+								<li class="health"><a href="#">Health</a></li>
+							</ul>
+					    </div>
+					</div>
+				</div>			
+			</div>
 			<div class="row-fluid">
     			<div id="info" class="span4">
     				<div id="image">
@@ -18,7 +40,6 @@
     				</div>
     			</div>
   				<div id="container" class="span8">
-					<svg id="legend"></svg>
 					<svg id="canvas"></svg>
 					<svg id="axis"></svg>
     			</div>

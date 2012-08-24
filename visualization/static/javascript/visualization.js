@@ -162,3 +162,12 @@ function drawLocationSeparations(){
 function getTopicColor(topic){
 	return topicColors[topic];
 }
+
+function topic_filter(topic_span){
+	if($(topic_span).hasClass("not-selected")){
+		$(topic_span).removeClass("not-selected");
+	}
+	else{
+		$(topic_span).addClass("not-selected");
+	}
+}

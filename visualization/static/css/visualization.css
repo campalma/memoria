@@ -1,14 +1,29 @@
-.navbar-inner{
-	background: black;
-	color: white;
+body{
+	padding: 20px;
 }
 
-.navbar .nav > li > a {
-	color: white;
+a:hover {
+	text-decoration: none; 
+}
+
+img {
+	max-height: 300px;
+	display: block;
+	margin-left: auto;   
+	margin-right: auto;
+}
+
+#image{
+	height: 300px;
+}
+
+.label{
+	font-size: 13px;
 }
 
 .headlines{
 	background: #90AEC6;
+	text-decoration: none;
 }
 
 .world{
@@ -45,4 +60,9 @@
 
 .health{
 	background: #D13D94;
+}
+
+.not-selected{
+	background: #C9C7C8;
+	color: #E8E8E8;
 }

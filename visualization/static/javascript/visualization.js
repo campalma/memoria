@@ -1,5 +1,5 @@
-var svg, axisSvg, legend, info;
-var width = 800;
+var svg, time_axis, location_axis, legend, info;
+var width = 700;
 var height = 600;
 var legendHeight = 30;
 var axisHeight = 100;
@@ -31,7 +31,7 @@ continentsPosition = {
 		"South America": 5,
 //		"Antarctica": 6,
 		"": 6,
-		"Unknown Location": 6,
+		"Unknown": 6,
 } 
 continentsCount = 7
 
@@ -40,9 +40,13 @@ function init(){
 			.attr("width", width)
 	      	.attr("height", height);
 
-	axisSvg = d3.select("#axis")
+	time_axis = d3.select("#time_axis")
 				.attr("width", width)
 				.attr("height", axisHeight);
+
+	location_axis = d3.select("#location_axis")
+				.attr("width", 50)
+				.attr("height", height);
 
 	drawLocationSeparations();
 
@@ -122,7 +126,7 @@ function displayEvents(){
 function displayAxis(minDate, maxDate){
 	x.domain([minDate, maxDate]);	
 	
-	axisSvg.append("svg:g")
+	time_axis.append("svg:g")
 	   .attr("transform", "translate(0," + 0 + ")")
 	   .call(xAxis);
 }
@@ -150,10 +154,12 @@ function drawLocationSeparations(){
 		   .attr("x2", width+"")
 		   .attr("y2", slotSize*(value+1)+"")
 		   .style("stroke", "grey");
-		svg.append("text")
+		var lol = slotSize*(value+1)-30;
+		location_axis.append("text")
 		   .attr("x", "0")
-		   .attr("y", (slotSize*(value+1))-slotSize/2)
+		   .attr("y", lol)
 		   .attr("fill", "black")
+		   .attr("transform", "rotate(-90,25,"+lol+")")
 		   .text(key);
 
 	});

@@ -13,6 +13,10 @@ img {
 	margin-right: auto;
 }
 
+#time_axis{
+	margin-left: 50px;
+}
+
 #image{
 	height: 300px;
 }

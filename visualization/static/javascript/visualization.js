@@ -8,19 +8,7 @@ var x = d3.time.scale().range([0, width]);
 var xAxis = d3.svg.axis().scale(x).tickSize(-height).tickSubdivide(true);
 var events;
 var lastClicked = null;
-
-topicColors = {
-	"Top Headlines": "#90AEC6",
-	"World": "#FF8F00",
-	"Business": "#E7E4D3",
-	"Nation": "#D72729",
-	"Science and Technology": "#471605",
-	"Elections": "#E3A6EC",
-	"Politics": "#DDC0B2",
-	"Entertainment": "#3D4C53",
-	"Sports": "#669966",
-	"Health": "#D13D94"
-}
+var topics;
 
 continentsPosition = {
 		"Africa": 0,
@@ -49,14 +37,28 @@ function init(){
 				.attr("height", height);
 
 	drawLocationSeparations();
-
+	
 	$.ajax({
-		url: "/api/clustersquery",
+		url: "/api/topics",
 		dataType: "json",
-		data: events,
+		data: topics,
 		success: function(data){
-			events = data;
-			displayEvents();
+			topics = data;
+
+			$.each(topics, function(key, value){
+				$("#topics-row").append("<a href='#'><span id='"+value.fields.short_name+"' class='label topic'>"+value.fields.name+"</span></a> ");
+				$("#"+value.fields.short_name).css("background", "#"+value.fields.color);
+			});
+
+			$.ajax({
+				url: "/api/clustersquery",
+				dataType: "json",
+				data: events,
+				success: function(data){
+					events = data;
+					displayEvents();
+				}
+			});
 		}
 	});
 }
@@ -87,13 +89,16 @@ function displayEvents(){
 			localAttribute = "global";
 		}
 
+		article_color = "#"+getTopicColor(event.fields.topic);
+		console.log(article_color);
+
 		var article = svg.append("circle")
 		   				 .attr("id", key)
 		   				 .attr("cx", x(new Date(event.fields.date)))
 		   				 .attr("cy", getLocationPosition(event.fields.continent_location))
 		   				 .attr("r", event.fields.relevancy*5)
 		   				 .attr("class", localAttribute)
-						 .style("fill", getTopicColor(event.fields.topic))
+						 .style("fill", article_color)
 						 .style("stroke-width", 2)
 						 .style("stroke", strokeColor(event));
 
@@ -164,7 +169,13 @@ function drawLocationSeparations(){
 }
 
 function getTopicColor(topic){
-	return topicColors[topic];
+	var result;
+	$.each(topics, function(key, value){
+		if(value.pk == topic){
+			result = value.fields.color;
+		}
+	});
+	return result;
 }
 
 function topic_filter(topic_span){

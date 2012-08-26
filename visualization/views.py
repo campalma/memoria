@@ -5,7 +5,7 @@ from django.core import serializers
 from datetime import date
 
 # Models import
-from visualization.models import Article, Cluster
+from visualization.models import Article, Cluster, Topic
 
 # Collect news using some api
 def collect(request):
@@ -35,4 +35,9 @@ def cluster_query_by_date(request):
 	max_date = request.GET["date"]
 	clusters = Cluster.objects.filter(date__lte = max_date).order_by("date")[:50]
 	json = serializers.serialize("json", clusters)
+	return HttpResponse(json, mimetype='application/json')
+
+def get_topics(request):
+	topics = Topic.objects.all()
+	json = serializers.serialize("json", topics)
 	return HttpResponse(json, mimetype='application/json')

@@ -25,45 +25,8 @@ img {
 	font-size: 13px;
 }
 
-.headlines{
-	background: #90AEC6;
+.topic{
 	text-decoration: none;
-}
-
-.world{
-	background: #FF8F00;
-}
-
-.business{
-	background: #E7E4D3;
-}
-
-.nation{
-	background: #D72729;
-}
-
-.science{
-	background: #471605;
-}
-
-.elections{
-	background: #E3A6EC;
-}
-
-.politics{
-	background: #DDC0B2;
-}
-
-.entertainment{
-	background: #3D4C53;
-}
-
-.sports{
-	background: #669966;
-}
-
-.health{
-	background: #D13D94;
 }
 
 .not-selected{

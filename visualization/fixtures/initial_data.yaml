@@ -1,0 +1,69 @@
+- model: visualization.topic
+  pk: 1
+  fields:
+    name: Top Headlines
+    short_name: h
+    color: 90AEC6
+
+- model: visualization.topic
+  pk: 2
+  fields:
+    name: World
+    short_name: w
+    color: FF8F00
+
+- model: visualization.topic
+  pk: 3
+  fields:
+    name: Business
+    short_name: b
+    color: E7E4D3
+
+- model: visualization.topic
+  pk: 4
+  fields:
+    name: Nation
+    short_name: n
+    color: D72729
+
+- model: visualization.topic
+  pk: 5
+  fields:
+    name: Science and Technology
+    short_name: t
+    color: 471605
+
+- model: visualization.topic
+  pk: 6
+  fields:
+    name: Elections
+    short_name: el
+    color: E3A6EC
+
+- model: visualization.topic
+  pk: 7
+  fields:
+    name: Politics
+    short_name: p
+    color: DDC0B2
+
+- model: visualization.topic
+  pk: 8
+  fields:
+    name: Entertainment
+    short_name: e
+    color: 3D4C53
+
+- model: visualization.topic
+  pk: 9
+  fields:
+    name: Sports
+    short_name: s
+    color: 669966
+
+- model: visualization.topic
+  pk: 10
+  fields:
+    name: Health
+    short_name: m
+    color: D13D94

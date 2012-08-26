@@ -23,8 +23,8 @@ TOPICS = {
 #ZONES = ["uk"]
 #ZONES = ["es"]
 #ZONES = ["au"]
-ZONES = ["es_ar"]
-#ZONES = ["en_za"]
+#ZONES = ["es_ar"]
+ZONES = ["en_za"]
 
 def collect():
 	result = []

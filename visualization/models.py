@@ -4,11 +4,16 @@ from datetime import datetime
 from time import strptime
 from apis import Placemaker
 
+class Topic(models.Model):
+	name = models.CharField(max_length=100)
+	short_name = models.CharField(max_length=500)
+	color = models.CharField(max_length=7)
+
 class Cluster(models.Model):
 	image = models.URLField(max_length=500)
 	relevancy = models.IntegerField()
 	is_local = models.BooleanField()
-	topic = models.CharField(max_length=100)
+	topic = models.ForeignKey(Topic)
 	location = models.CharField(max_length=200)
 	continent_location = models.CharField(max_length=100)
 	added_date = models.DateTimeField(auto_now_add=True)
@@ -39,7 +44,7 @@ class Article(models.Model):
 				cluster.relevancy = len(google_article["relatedStories"]) + 1
 			else:
 				cluster.relevancy = 1
-			cluster.topic = google_article["topic"]
+			cluster.topic = Topic.objects.get(name=google_article["topic"])
 			cluster.is_local = False
 			cluster.location = google_article["location"]
 			cluster.continent_location = ""
@@ -82,8 +87,6 @@ class Article(models.Model):
 			if len(clusters_locations) > 0:
 				cluster.continent_location = clusters_locations[0]
 				cluster.save()
-
-
 
 def format_date(google_date):
 	t = strptime(google_date[:-6], "%a, %d %b %Y %H:%M:%S")

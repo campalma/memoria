@@ -2,7 +2,7 @@ var svg, time_axis, location_axis, legend, info;
 var width = 700;
 var height = 600;
 var legendHeight = 30;
-var axisHeight = 100;
+var axisHeight = 20;
 var maxRelevancy = 100;
 var x = d3.time.scale().range([0, width]);
 var xAxis = d3.svg.axis().scale(x).tickSize(-height).tickSubdivide(true);
@@ -86,8 +86,6 @@ function displayEvents(){
 		else{
 			localAttribute = "global";
 		}
-
-		console.log(event.fields.topic)
 
 		var article = svg.append("circle")
 		   				 .attr("id", key)

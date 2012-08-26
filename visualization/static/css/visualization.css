@@ -30,6 +30,6 @@ img {
 }
 
 .not-selected{
-	background: #C9C7C8;
+	background: #C9C7C8 !important;
 	color: #E8E8E8;
 }

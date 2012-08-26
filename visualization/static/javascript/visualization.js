@@ -3,7 +3,6 @@ var width = 700;
 var height = 600;
 var legendHeight = 30;
 var axisHeight = 20;
-var maxRelevancy = 100;
 var x = d3.time.scale().range([0, width]);
 var xAxis = d3.svg.axis().scale(x).tickSize(-height).tickSubdivide(true);
 var events;
@@ -46,7 +45,7 @@ function init(){
 			topics = data;
 
 			$.each(topics, function(key, value){
-				$("#topics-row").append("<a href='#'><span id='"+value.fields.short_name+"' class='label topic'>"+value.fields.name+"</span></a> ");
+				$("#topics-row").append("<a href='#'><span id='"+value.fields.short_name+"' class='label topic' onclick='topic_filter(this)'>"+value.fields.name+"</span></a> ");
 				$("#"+value.fields.short_name).css("background", "#"+value.fields.color);
 			});
 
@@ -96,7 +95,7 @@ function displayEvents(){
 		   				 .attr("id", key)
 		   				 .attr("cx", x(new Date(event.fields.date)))
 		   				 .attr("cy", getLocationPosition(event.fields.continent_location))
-		   				 .attr("r", event.fields.relevancy*5)
+		   				 .attr("r", Math.log(event.fields.relevancy)*5)
 		   				 .attr("class", localAttribute)
 						 .style("fill", article_color)
 						 .style("stroke-width", 2)

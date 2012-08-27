@@ -2,7 +2,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.core import serializers
-import json
+from json import dumps
 from datetime import date
 
 # Models import
@@ -48,5 +48,11 @@ def get_continents(request):
 	response = {}
 	for continent in continents:
 		response[continent.id] = continent.name
-	response = json.dumps(response)
-	return HttpResponse(response, mimetype='application/json')
+	json = dumps(response)
+	return HttpResponse(json, mimetype='application/json')
+
+def locations_query(request, cluster_id):
+	cluster = Cluster.objects.get(id=cluster_id)
+	locations = cluster.location.all()
+	json = serializers.serialize("json", locations)
+	return HttpResponse(json, mimetype='application/json')

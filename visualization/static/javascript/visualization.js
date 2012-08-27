@@ -119,6 +119,18 @@ function displayEvents(){
 		   				 	$(this).css("stroke", "red");
 		   				 	lastClicked = this;
 
+		   				 	$.ajax({
+		   				 		url: "/api/locationsquery/"+events[this.id].pk,
+		   				 		dataType: "json",
+		   				 		success: function(data){
+
+		   				 			$("#locations")[0].innerHTML = "";
+		   				 			$.each(data, function(key, value){
+		   				 				$("#locations").append("<span class='badge badge-info'>"+value.fields.name+"</span> ");
+		   				 			});
+		   				 		}
+		   				 	});
+
 							$.ajax({
 								url: "/api/clusternewsquery/"+events[this.id].pk,
 								dataType: "json",

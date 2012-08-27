@@ -7,13 +7,13 @@ RSZ = "8"
 VERSION = "1.0"
 
 TOPICS = {
-	"h": "Top Headlines",
-	"w": "World",
-	"b": "Business",
-	"n": "Nation",
-	"t": "Science and Technology",
-	"el": "Elections",
-	"p": "Politics",
+#	"h": "Top Headlines",
+#	"w": "World",
+#	"b": "Business",
+#	"n": "Nation",
+#	"t": "Science and Technology",
+#	"el": "Elections",
+#	"p": "Politics",
 	"e": "Entertainment",
 	"s": "Sports",
 	"m": "Health"

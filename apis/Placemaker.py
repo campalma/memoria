@@ -30,6 +30,27 @@ def get_continent_from_string(string):
 		print []
 		print []
 		return []
+
+def get_countries_from_string(string):
+	yahooUrl = 'http://wherein.yahooapis.com/v1/document'
+	data = urllib.urlencode({'documentContent': string.encode('ascii', 'ignore'), 'documentType': 'text/plain', 'appid': APP_ID, 'outputType': 'json'})
+	response = urllib2.urlopen(yahooUrl, data)
+	json = response.read()
+	data = simplejson.loads(json)
+	countries = []
+	if "document" in data:
+		for i in get_all(data["document"], "name"):
+			countries.append(i)
+	return set(countries)
+
+def get_continents_from_countries(countries):
+	continents = []
+	for country in countries:
+		try:
+			continents.append(transformations.cn_to_ctn(country))
+		except KeyError:
+			pass
+	return continents
 			
 def getLinkPlace(url):
 	yahooUrl = 'http://wherein.yahooapis.com/v1/document'

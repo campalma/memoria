@@ -8,6 +8,7 @@ var xAxis = d3.svg.axis().scale(x).tickSize(-height).tickSubdivide(true);
 var events;
 var lastClicked = null;
 var topics;
+var continents;
 
 continentsPosition = {
 		"Africa": 0,
@@ -37,6 +38,15 @@ function init(){
 
 	drawLocationSeparations();
 	
+	$.ajax({
+		url: "/api/continents",
+		dataType: "json",
+		data: continents,
+		success: function(data){
+			continents = data;
+		}
+	})
+
 	$.ajax({
 		url: "/api/topics",
 		dataType: "json",
@@ -142,7 +152,14 @@ function strokeColor(event){
 	}
 }
 
-function getLocationPosition(continent){
+function getLocationPosition(continents_array){
+	console.log(continents_array);
+	if(continents_array.length == 0){
+		continent = "Unknown";
+	}
+	else{
+		continent = continents[continents_array[0]];
+	}
 	slotSize = height/continentsCount;
 	return slotSize*continentsPosition[continent] + Math.random()*slotSize;
 }

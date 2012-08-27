@@ -2,10 +2,11 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.core import serializers
+import json
 from datetime import date
 
 # Models import
-from visualization.models import Article, Cluster, Topic
+from visualization.models import Article, Cluster, Topic, Continent
 
 # Collect news using some api
 def collect(request):
@@ -41,3 +42,11 @@ def get_topics(request):
 	topics = Topic.objects.all()
 	json = serializers.serialize("json", topics)
 	return HttpResponse(json, mimetype='application/json')
+
+def get_continents(request):
+	continents = Continent.objects.all()
+	response = {}
+	for continent in continents:
+		response[continent.id] = continent.name
+	response = json.dumps(response)
+	return HttpResponse(response, mimetype='application/json')

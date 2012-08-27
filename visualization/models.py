@@ -4,6 +4,12 @@ from datetime import datetime
 from time import strptime
 from apis import Placemaker
 
+class Continent(models.Model):
+	name = models.CharField(max_length=100)
+
+class Location(models.Model):
+	name = models.CharField(max_length=100)
+
 class Topic(models.Model):
 	name = models.CharField(max_length=100)
 	short_name = models.CharField(max_length=500)
@@ -14,8 +20,8 @@ class Cluster(models.Model):
 	relevancy = models.IntegerField()
 	is_local = models.BooleanField()
 	topic = models.ForeignKey(Topic)
-	location = models.CharField(max_length=200)
-	continent_location = models.CharField(max_length=100)
+	location = models.ManyToManyField(Location)
+	continent_location = models.ManyToManyField(Continent)
 	added_date = models.DateTimeField(auto_now_add=True)
 	date = models.DateTimeField()
 
@@ -45,8 +51,6 @@ class Article(models.Model):
 				cluster.relevancy = 100/google_article["page"]
 			cluster.topic = Topic.objects.get(name=google_article["topic"])
 			cluster.is_local = False
-			cluster.location = google_article["location"]
-			cluster.continent_location = ""
 			cluster.date = format_date(google_article["publishedDate"])
 			cluster.save()
 
@@ -80,10 +84,27 @@ class Article(models.Model):
 					article.published_date = format_date(related["publishedDate"])
 					article.cluster = cluster
 					article.save()
-			clusters_locations = Placemaker.get_continent_from_string(cluster_content)
-			if len(clusters_locations) > 0:
-				cluster.continent_location = clusters_locations[0]
-				cluster.save()
+			cluster.save()
+			cluster_countries = Placemaker.get_countries_from_string(cluster_content)
+			for country in cluster_countries:
+				try:
+					l = Location.objects.get(name=country)
+				except Location.DoesNotExist:
+					l = Location()
+					l.name = country
+					l.save()
+				cluster.location.add(l)
+
+			cluster_continents = Placemaker.get_continents_from_countries(cluster_countries)
+			for continent in cluster_continents:
+				try:
+					c = Continent.objects.get(name=continent)
+				except Continent.DoesNotExist:
+					c = Continent()
+					c.name = continent
+					c.save()
+				cluster.continent_location.add(c)
+			cluster.save()
 
 def format_date(google_date):
 	t = strptime(google_date[:-6], "%a, %d %b %Y %H:%M:%S")

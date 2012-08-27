@@ -11,6 +11,7 @@ urlpatterns = patterns('',
 	url(r'^api/clusternewsquery/(\d+)/', 'visualization.views.cluster_news_query'),
     url(r'^api/clustersbydate/', 'visualization.views.cluster_query_by_date'),
     url(r'^api/topics/', 'visualization.views.get_topics'),
+    url(r'^api/continents/', 'visualization.views.get_continents'),
     # Examples:
     # url(r'^$', 'eventsvis.views.home', name='home'),
     # url(r'^eventsvis/', include('eventsvis.foo.urls')),

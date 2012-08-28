@@ -20,7 +20,12 @@ def visualize(request):
 
 # Ajax query: get last 50 news
 def clusters_query(request):
-	clusters = Cluster.objects.all().order_by("-date")[:50]
+	excluded = Topic.get_excluded_topics(request.GET);
+	print excluded
+	clusters = Cluster.objects.all()
+	for e in excluded:
+		clusters = clusters.exclude(topic=e)
+	clusters = clusters.order_by("-date")[:50]
 	json = serializers.serialize("json", clusters)
 	return HttpResponse(json, mimetype='application/json')
 

@@ -15,6 +15,15 @@ class Topic(models.Model):
 	short_name = models.CharField(max_length=500)
 	color = models.CharField(max_length=7)
 
+	@staticmethod
+	def get_excluded_topics(get_request):
+		topics = Topic.objects.all()
+		excluded = []
+		for t in topics:
+			if not (t.short_name in get_request):
+				excluded.append(t)
+		return excluded
+
 class Cluster(models.Model):
 	image = models.URLField(max_length=500)
 	relevancy = models.IntegerField()

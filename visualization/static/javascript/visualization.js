@@ -5,10 +5,8 @@ var legendHeight = 30;
 var axisHeight = 20;
 var x = d3.time.scale().range([0, width]);
 var xAxis = d3.svg.axis().scale(x).tickSize(-height).tickSubdivide(true);
-var events;
+var events, topics, continents;
 var lastClicked = null;
-var topics;
-var continents;
 var continents_position = {};
 
 Object.size = function(obj) {
@@ -40,8 +38,6 @@ function init(){
 
 	// Set topics from database
 	set_topics_bar();
-
-	refresh_clusters();
 }
 
 function displayEvents(){
@@ -100,6 +96,7 @@ function displayAxis(minDate, maxDate){
 	x.domain([minDate, maxDate]);	
 	
 	time_axis.append("svg:g")
+	   .attr("id", "time_svg")
 	   .attr("transform", "translate(0," + 0 + ")")
 	   .call(xAxis);
 }
@@ -127,7 +124,6 @@ function getLocationPosition(continents_array){
 function draw_location_separations(){
 	var slotSize = height/Object.size(continents_position);
 	$.each(continents_position, function(key, value){
-		console.log("hola");
 		svg.append("line")
 		   .attr("x1", "0")
 		   .attr("y1", slotSize*(value+1)+"")
@@ -168,13 +164,16 @@ function topic_filter(topic_span){
 	}
 	else{
 		$(topic_span).addClass("not-selected");
-		console.log($("#"+topic_id+"_check"));
 		$("#"+topic_id+"_check")[0].checked = false;
 	}
+	refresh_clusters();
 }
 
 function refresh_clusters(){
-	$.get("/api/clustersquery", {}, 
+	remove_clusters();
+	remove_time_axis();
+	params = $("#topics-form").serializeArray();
+	$.get("/api/clustersquery", params, 
 		function(data){
 			events = data;
 			displayEvents();
@@ -205,9 +204,10 @@ function set_topics_bar(){
 			topics = data;
 			$.each(topics, function(key, value){
 				$("#topics-row").append("<a href='#'><span id='"+value.fields.short_name+"' class='label topic' onclick='topic_filter(this)'>"+value.fields.name+"</span></a> ");
-				$("#topics-row").append("<input type='checkbox' class='topic_check' checked='true' id='"+value.fields.short_name+"_check'/>");
+				$("#topics-row").append("<input type='checkbox' class='topic_check' checked='true' id='"+value.fields.short_name+"_check' name='"+value.fields.short_name+"'/>");
 				$("#"+value.fields.short_name).css("background", "#"+value.fields.color);
 			});
+			refresh_clusters();
 		}
 	});
 }
@@ -248,4 +248,12 @@ function set_continents_position(){
 		position++;
 	});
 	continents_position["Unknown"] = position;
+}
+
+function remove_clusters(){
+	d3.selectAll("circle").remove();
+}
+
+function remove_time_axis(){
+	d3.select("#time_svg").remove();
 }

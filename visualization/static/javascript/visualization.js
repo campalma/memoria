@@ -9,67 +9,39 @@ var events;
 var lastClicked = null;
 var topics;
 var continents;
+var continents_position = {};
 
-continentsPosition = {
-		"Africa": 0,
-		"Asia": 1,
-		"Europe": 2,
-		"North America": 3,
-		"Oceania": 4,
-		"South America": 5,
-//		"Antarctica": 6,
-		"": 6,
-		"Unknown": 6,
-} 
-continentsCount = 7
+Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
 
 function init(){
+	// Set canvas size
 	svg = d3.select("#canvas")
 			.attr("width", width)
 	      	.attr("height", height);
 
+	// Set time axis size
 	time_axis = d3.select("#time_axis")
 				.attr("width", width)
 				.attr("height", axisHeight);
 
+	// Set location size
 	location_axis = d3.select("#location_axis")
 				.attr("width", 50)
 				.attr("height", height);
 
-	drawLocationSeparations();
-	
-	$.ajax({
-		url: "/api/continents",
-		dataType: "json",
-		data: continents,
-		success: function(data){
-			continents = data;
-		}
-	})
+	// Get continents from database
+	get_continents();
 
-	$.ajax({
-		url: "/api/topics",
-		dataType: "json",
-		data: topics,
-		success: function(data){
-			topics = data;
+	// Set topics from database
+	set_topics_bar();
 
-			$.each(topics, function(key, value){
-				$("#topics-row").append("<a href='#'><span id='"+value.fields.short_name+"' class='label topic' onclick='topic_filter(this)'>"+value.fields.name+"</span></a> ");
-				$("#"+value.fields.short_name).css("background", "#"+value.fields.color);
-			});
-
-			$.ajax({
-				url: "/api/clustersquery",
-				dataType: "json",
-				data: events,
-				success: function(data){
-					events = data;
-					displayEvents();
-				}
-			});
-		}
-	});
+	refresh_clusters();
 }
 
 function displayEvents(){
@@ -99,7 +71,6 @@ function displayEvents(){
 		}
 
 		article_color = "#"+getTopicColor(event.fields.topic);
-		console.log(article_color);
 
 		var article = svg.append("circle")
 		   				 .attr("id", key)
@@ -119,30 +90,8 @@ function displayEvents(){
 		   				 	$(this).css("stroke", "red");
 		   				 	lastClicked = this;
 
-		   				 	$.ajax({
-		   				 		url: "/api/locationsquery/"+events[this.id].pk,
-		   				 		dataType: "json",
-		   				 		success: function(data){
-
-		   				 			$("#locations")[0].innerHTML = "";
-		   				 			$.each(data, function(key, value){
-		   				 				$("#locations").append("<span class='badge badge-info'>"+value.fields.name+"</span> ");
-		   				 			});
-		   				 		}
-		   				 	});
-
-							$.ajax({
-								url: "/api/clusternewsquery/"+events[this.id].pk,
-								dataType: "json",
-								success: function(data){
-
-									$("#news")[0].innerHTML = "</br>";
-									$("#image")[0].innerHTML = "<img src='"+events[$(lastClicked).attr("id")].fields.image+"'/>";
-									$.each(data, function(key, article){
-										$("#news").append(article.fields.published_date+" <a href='"+article.fields.url+"'>"+article.fields.title +" ["+article.fields.publisher+"]"+"</a><br/>");
-									});
-								}
-							});
+		   				 	get_cluster_locations(events[this.id].pk);
+		   				 	get_cluster_info(events[this.id].pk);
 						 });
 	});
 }
@@ -165,34 +114,39 @@ function strokeColor(event){
 }
 
 function getLocationPosition(continents_array){
-	console.log(continents_array);
 	if(continents_array.length == 0){
 		continent = "Unknown";
 	}
 	else{
 		continent = continents[continents_array[0]];
 	}
-	slotSize = height/continentsCount;
-	return slotSize*continentsPosition[continent] + Math.random()*slotSize;
+	slotSize = height/Object.size(continents_position);
+	return slotSize*continents_position[continent] + Math.random()*slotSize;
 }
 
-function drawLocationSeparations(){
-	var slotSize = height/continentsCount
-	$.each(continentsPosition, function(key, value){
+function draw_location_separations(){
+	var slotSize = height/Object.size(continents_position);
+	$.each(continents_position, function(key, value){
+		console.log("hola");
 		svg.append("line")
 		   .attr("x1", "0")
 		   .attr("y1", slotSize*(value+1)+"")
 		   .attr("x2", width+"")
 		   .attr("y2", slotSize*(value+1)+"")
 		   .style("stroke", "grey");
+	});
+}
+
+function set_continent_axis(){
+	var slotSize = height/Object.size(continents_position);
+	$.each(continents_position, function(key, value){
 		var lol = slotSize*(value+1)-30;
 		location_axis.append("text")
-		   .attr("x", "0")
-		   .attr("y", lol)
-		   .attr("fill", "black")
-		   .attr("transform", "rotate(-90,25,"+lol+")")
-		   .text(key);
-
+					 .attr("x", "0")
+					 .attr("y", lol)
+					 .attr("fill", "black")
+					 .attr("transform", "rotate(-90,25,"+lol+")")
+					 .text(key);
 	});
 }
 
@@ -207,10 +161,91 @@ function getTopicColor(topic){
 }
 
 function topic_filter(topic_span){
+	topic_id = $(topic_span)[0].id
 	if($(topic_span).hasClass("not-selected")){
 		$(topic_span).removeClass("not-selected");
+		$("#"+topic_id+"_check")[0].checked = true;
 	}
 	else{
 		$(topic_span).addClass("not-selected");
+		console.log($("#"+topic_id+"_check"));
+		$("#"+topic_id+"_check")[0].checked = false;
 	}
+}
+
+function refresh_clusters(){
+	$.get("/api/clustersquery", {}, 
+		function(data){
+			events = data;
+			displayEvents();
+		}
+	);
+}
+
+function get_continents(){
+	$.ajax({
+		url: "/api/continents",
+		dataType: "json",
+		data: continents,
+		success: function(data){
+			continents = data;
+			set_continents_position();
+			draw_location_separations();
+			set_continent_axis();
+		}
+	});
+}
+
+function set_topics_bar(){
+	$.ajax({
+		url: "/api/topics",
+		dataType: "json",
+		data: topics,
+		success: function(data){
+			topics = data;
+			$.each(topics, function(key, value){
+				$("#topics-row").append("<a href='#'><span id='"+value.fields.short_name+"' class='label topic' onclick='topic_filter(this)'>"+value.fields.name+"</span></a> ");
+				$("#topics-row").append("<input type='checkbox' class='topic_check' checked='true' id='"+value.fields.short_name+"_check'/>");
+				$("#"+value.fields.short_name).css("background", "#"+value.fields.color);
+			});
+		}
+	});
+}
+
+function get_cluster_info(id){
+	$.ajax({
+		url: "/api/clusternewsquery/"+id,
+		dataType: "json",
+		success: function(data){
+
+			$("#news")[0].innerHTML = "</br>";
+			$("#image")[0].innerHTML = "<img src='"+events[$(lastClicked).attr("id")].fields.image+"'/>";
+			$.each(data, function(key, article){
+				$("#news").append(article.fields.published_date+" <a href='"+article.fields.url+"'>"+article.fields.title +" ["+article.fields.publisher+"]"+"</a><br/>");
+			});
+		}
+	});
+}
+
+function get_cluster_locations(id){
+ 	$.ajax({
+		url: "/api/locationsquery/"+id,
+		dataType: "json",
+		success: function(data){
+
+			$("#locations")[0].innerHTML = "";
+			$.each(data, function(key, value){
+				$("#locations").append("<span class='badge badge-info'>"+value.fields.name+"</span> ");
+			});
+		}
+	});
+}
+
+function set_continents_position(){
+	var position = 0;
+	$.each(continents, function(key, value){
+		continents_position[value] = position;
+		position++;
+	});
+	continents_position["Unknown"] = position;
 }

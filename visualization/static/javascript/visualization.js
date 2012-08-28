@@ -41,6 +41,9 @@ function init(){
 }
 
 function displayEvents(){
+
+	lastClicked = null;
+
 	var minDate = new Date(events[0].fields.date);
 	var maxDate = new Date(events[0].fields.date);
 	

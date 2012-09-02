@@ -145,6 +145,7 @@ function set_continent_axis(){
 					 .attr("y", lol)
 					 .attr("fill", "black")
 					 .attr("transform", "rotate(-90,25,"+lol+")")
+					 .attr("onclick", "continent_filter(this)")
 					 .text(key);
 	});
 }
@@ -182,6 +183,12 @@ function refresh_clusters(){
 			displayEvents();
 		}
 	);
+}
+
+function continent_filter(continent){
+	selected = d3.select(continent);
+	$("#display_continent").val(selected.text());
+	refresh_clusters();
 }
 
 function get_continents(){

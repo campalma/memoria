@@ -25,6 +25,11 @@ def clusters_query(request):
 	clusters = Cluster.objects.all()
 	for e in excluded:
 		clusters = clusters.exclude(topic=e)
+	continent_display = request.GET["display_continent"];
+	if(continent_display=="Unknown"):
+		continent_display = None
+	if(continent_display!="all"):
+		clusters = clusters.filter(continent_location__name=continent_display)
 	clusters = clusters.order_by("-date")[:50]
 	json = serializers.serialize("json", clusters)
 	return HttpResponse(json, mimetype='application/json')

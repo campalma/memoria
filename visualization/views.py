@@ -28,7 +28,7 @@ def clusters_query(request):
 	continent_display = request.GET["display_continent"];
 	if(continent_display=="Unknown"):
 		continent_display = None
-	if(continent_display!="all"):
+	if(continent_display!="All"):
 		clusters = clusters.filter(continent_location__name=continent_display)
 	clusters = clusters.order_by("-date")[:50]
 	json = serializers.serialize("json", clusters)

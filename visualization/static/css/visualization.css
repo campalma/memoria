@@ -8,9 +8,6 @@ a:hover {
 
 img {
 	max-height: 300px;
-	display: block;
-	margin-left: auto;   
-	margin-right: auto;
 }
 
 #time_axis{
@@ -19,6 +16,10 @@ img {
 
 #image{
 	height: 300px;
+	display:-webkit-box;
+	-webkit-box-orient:horizontal;
+	-webkit-box-pack:center;
+	-webkit-box-align:center;
 }
 
 .label{

@@ -84,9 +84,9 @@ function displayEvents(){
 						 .style("opacity", "0")
 						 .transition()
 						 .style("opacity", 100)
-						 .duration(1500);
-		   				 $("#"+key).click(function(){
-
+						 .duration(1500)
+						 .each("end", function(){		   				 
+						 	$("#"+key).click(function(){
 		   				 	if(lastClicked!=null){
 		   				 		$(lastClicked).css("stroke", strokeColor(events[$(lastClicked).attr("id")]))
 		   				 	}
@@ -95,7 +95,8 @@ function displayEvents(){
 
 		   				 	get_cluster_locations(events[this.id].pk);
 		   				 	get_cluster_info(events[this.id].pk);
-						 });
+						 });});
+
 	});
 }
 
@@ -237,7 +238,7 @@ function continent_filter_animation(continent){
 			 .duration(1500).each("end", 
 			 	function(){
 				 	refresh_clusters(); 
-				 	d3.select(this).transition().style("kerning", "20")
+				 	d3.select(this).transition().style("kerning", "10")
 				 	d3.select("#location_axis").append("text")
 				 							   .attr("x", 0)
 				 							   .attr("y", height-10)
@@ -248,6 +249,7 @@ function continent_filter_animation(continent){
 }
 
 function back_to_all_continents(){
+	continent_selected = false;
 	draw_location_separations();
 	set_continent_axis();
 	d3.select("#display_continent").attr("value", "All");
@@ -324,6 +326,7 @@ function set_continents_position(){
 }
 
 function remove_clusters(){
+	events = null
 	d3.selectAll("circle").transition().style("opacity", "0").remove();
 }
 

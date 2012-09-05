@@ -7,24 +7,24 @@ RSZ = "8"
 VERSION = "1.0"
 
 TOPICS = {
-#	"h": "Top Headlines",
-#	"w": "World",
-#	"b": "Business",
-#	"n": "Nation",
-#	"t": "Science and Technology",
-#	"el": "Elections",
-#	"p": "Politics",
+	"h": "Top Headlines",
+	"w": "World",
+	"b": "Business",
+	"n": "Nation",
+	"t": "Science and Technology",
+	"el": "Elections",
+	"p": "Politics",
 	"e": "Entertainment",
 	"s": "Sports",
 	"m": "Health"
 }
 
-#ZONES = ["us"]#, "uk"]#, "au", "es", "es_cl", "es_ar"]
+#ZONES = ["us", "uk"]#, "au"]#, "es", "es_cl", "es_ar"]
 #ZONES = ["uk"]
 #ZONES = ["es"]
-#ZONES = ["au"]
+ZONES = ["au"]
 #ZONES = ["es_ar"]
-ZONES = ["en_za"]
+#ZONES = ["en_za"]
 
 def collect():
 	result = []

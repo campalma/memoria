@@ -30,7 +30,7 @@ def clusters_query(request):
 		continent_display = None
 	if(continent_display!="All"):
 		clusters = clusters.filter(continent_location__name=continent_display)
-	clusters = clusters.order_by("-date")[:50]
+	clusters = sorted(clusters.order_by("-date")[:100], key=lambda x:x.relevancy, reverse=True)
 	json = serializers.serialize("json", clusters)
 	return HttpResponse(json, mimetype='application/json')
 

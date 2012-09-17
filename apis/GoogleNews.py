@@ -19,10 +19,11 @@ TOPICS = {
 	"m": "Health"
 }
 
+ZONES = ["us"]
 #ZONES = ["us", "uk"]#, "au"]#, "es", "es_cl", "es_ar"]
 #ZONES = ["uk"]
 #ZONES = ["es"]
-ZONES = ["au"]
+#ZONES = ["au"]
 #ZONES = ["es_ar"]
 #ZONES = ["en_za"]
 

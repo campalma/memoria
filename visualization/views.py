@@ -8,11 +8,11 @@ from datetime import date
 # Models import
 from visualization.models import Article, Cluster, Topic, Continent
 
+CLUSTERS_TO_VISUALIZE = 100
+
 # Collect news using some api
 def collect(request):
 	Article.collect_with_google()
-	clusters = Cluster.objects.all()
-	return HttpResponse(clusters)
 
 # Visualize clusters
 def visualize(request):
@@ -30,7 +30,7 @@ def clusters_query(request):
 		continent_display = None
 	if(continent_display!="All"):
 		clusters = clusters.filter(continent_location__name=continent_display)
-	clusters = sorted(clusters.order_by("-date")[:100], key=lambda x:x.relevancy, reverse=True)
+	clusters = sorted(clusters.order_by("-date")[:CLUSTERS_TO_VISUALIZE], key=lambda x:x.relevancy, reverse=True)
 	json = serializers.serialize("json", clusters)
 	return HttpResponse(json, mimetype='application/json')
 
@@ -42,9 +42,8 @@ def cluster_news_query(request, id):
 
 # Ajax query: get last 50 news before max_date
 def cluster_query_by_date(request):
-	print "adsfasdfasfaf"
 	max_date = request.GET["date"]
-	clusters = Cluster.objects.filter(date__lte = max_date).order_by("date")[:50]
+	clusters = Cluster.objects.filter(date__lte = max_date).order_by("date")[:CLUSTERS_TO_VISUALIZE]
 	json = serializers.serialize("json", clusters)
 	return HttpResponse(json, mimetype='application/json')
 

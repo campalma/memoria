@@ -1,5 +1,11 @@
 from visualization.views import collect
+from django.core.management.base import BaseCommand, CommandError
 
-request = ""
+class Command(BaseCommand):
+	args = 'none'
+	help = 'Task for collecting news'
 
-collect(request)
+	def handle(self, *args, **options):
+		request = ""
+		collect(request)
+		self.stdout.write('Successfully collected news')

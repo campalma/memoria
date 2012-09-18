@@ -45,11 +45,11 @@ function displayEvents(){
 
 	lastClicked = null;
 
-	var minDate = new Date(events[0].fields.date);
-	var maxDate = new Date(events[0].fields.date);
+	var minDate = to_utc(new Date(events[0].fields.date));
+	var maxDate = to_utc(new Date(events[0].fields.date));
 	
 	$.each(events, function(key, event){
-		var d = new Date(event.fields.date);
+		var d = to_utc(new Date(event.fields.date));
 		if(minDate > d){
 			minDate = d;
 		}
@@ -74,7 +74,7 @@ function displayEvents(){
 
 		var article = svg.append("circle")
 		   				 .attr("id", key)
-		   				 .attr("cx", x(new Date(event.fields.date)))
+		   				 .attr("cx", x(to_utc(event.fields.date)))
 		   				 .attr("cy", getLocationPosition(event.fields.continent_location))
 		   				 .attr("r", Math.log(event.fields.relevancy)*5)
 		   				 .attr("class", localAttribute)
@@ -96,7 +96,6 @@ function displayEvents(){
 		   				 	get_cluster_locations(events[this.id].pk);
 		   				 	get_cluster_info(events[this.id].pk);
 						 });});
-
 	});
 }
 
@@ -332,4 +331,9 @@ function remove_clusters(){
 
 function remove_time_axis(){
 	d3.select("#time_svg").remove();
+}
+
+function to_utc(date_str){
+	var date = new Date(date_str);
+	return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),  date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
 }

@@ -5,7 +5,7 @@ from django.conf.urls import patterns, include, url
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-	url(r'^collect/', 'visualization.views.collect'),
+#	url(r'^collect/', 'visualization.views.collect'),
 	url(r'^visualize/', 'visualization.views.visualize'),
 	url(r'^api/clustersquery', 'visualization.views.clusters_query'),
 	url(r'^api/clusternewsquery/(\d+)/', 'visualization.views.cluster_news_query'),

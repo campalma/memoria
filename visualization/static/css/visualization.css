@@ -6,20 +6,16 @@ a:hover {
 	text-decoration: none; 
 }
 
-img {
-	max-height: 300px;
-}
-
 #time_axis{
 	margin-left: 50px;
 }
 
 #image{
-	height: 300px;
-	display:-webkit-box;
-	-webkit-box-orient:horizontal;
-	-webkit-box-pack:center;
-	-webkit-box-align:center;
+	height: 30%;
+}
+
+img{
+	height: 100%;	
 }
 
 .label{
@@ -41,4 +37,14 @@ img {
 
 #topics-submit{
 	display: none;
+}
+
+#news{
+	height: 50%;
+	overflow-y: scroll;
+}
+
+#locations{
+	height: 20%;
+	overflow-y: scroll;
 }

@@ -1,6 +1,6 @@
 var svg, time_axis, location_axis, legend, info;
 var continent_selected = false;
-var width = 700;
+var width;
 var height = 600;
 var legendHeight = 30;
 var location_axis_width = 50;
@@ -30,6 +30,11 @@ function init(){
 	
 	width = get_best_canvas_width();
 
+	// Set topics from database
+	set_topics_bar();
+
+	height = get_best_canvas_height();
+
 	// Set canvas size
 	svg = d3.select("#canvas")
 			.attr("width", width)
@@ -48,21 +53,31 @@ function init(){
 	// Get continents from database
 	get_continents();
 
-	// Set topics from database
-	set_topics_bar();
+	// Get clusters
+	refresh_clusters();
 }
 
 function update_dimensions(){
 	var new_width = get_best_canvas_width();
-	//var new_height = $("#container").width()-$("#location_axis").width()*2;
+	var new_height = get_best_canvas_height();
 	$("#canvas").width(new_width);
+	$("#canvas").height(new_height);
 	$("#time_axis").width(new_width);
+	$("#location_axis").height(new_height);
+	$("#info").height(new_height);
 	width = new_width;
+	height = new_height;
+	set_continent_axis();
+	draw_location_separations();
 	refresh_clusters_without_querying();
 }
 
 function get_best_canvas_width(){
 	return $("#container").width()-location_axis_width*2;
+}
+
+function get_best_canvas_height(){
+	return $(window).height()-$("#topics-row").height()*2-axisHeight*2;
 }
 
 function displayEvents(){
@@ -157,6 +172,7 @@ function getLocationPosition(continents_array){
 }
 
 function draw_location_separations(){
+	d3.selectAll(".separation").remove();
 	var slotSize = height/Object.size(continents_position);
 	$.each(continents_position, function(key, value){
 		svg.append("line")
@@ -306,6 +322,7 @@ function set_topics_bar(){
 		url: "/api/topics",
 		dataType: "json",
 		data: topics,
+		async: false,
 		success: function(data){
 			topics = data;
 			$.each(topics, function(key, value){
@@ -313,7 +330,6 @@ function set_topics_bar(){
 				$("#topics-row").append("<input type='checkbox' class='topic_check' checked='true' id='"+value.fields.short_name+"_check' name='"+value.fields.short_name+"'/>");
 				$("#"+value.fields.short_name).css("background", "#"+value.fields.color);
 			});
-			refresh_clusters();
 		}
 	});
 }

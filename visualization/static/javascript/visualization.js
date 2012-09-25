@@ -3,13 +3,16 @@ var continent_selected = false;
 var width = 700;
 var height = 600;
 var legendHeight = 30;
+var location_axis_width = 50;
 var axisHeight = 20;
-var x = d3.time.scale().range([0, width]);
-var xAxis = d3.svg.axis().scale(x).tickSize(-height).tickSubdivide(true);
+var x;
+var xAxis;
 var events, topics, continents;
 var lastClicked = null;
 var continents_position = {};
+var id;
 
+// Object extension to know keys size
 Object.size = function(obj) {
     var size = 0, key;
     for (key in obj) {
@@ -19,6 +22,14 @@ Object.size = function(obj) {
 };
 
 function init(){
+	// Set window onresize
+	$(window).resize(function(){
+		clearTimeout(id);
+		id = setTimeout(update_dimensions, 500);
+	});
+	
+	width = get_best_canvas_width();
+
 	// Set canvas size
 	svg = d3.select("#canvas")
 			.attr("width", width)
@@ -31,7 +42,7 @@ function init(){
 
 	// Set location size
 	location_axis = d3.select("#location_axis")
-				.attr("width", 50)
+				.attr("width", location_axis_width)
 				.attr("height", height);
 
 	// Get continents from database
@@ -39,6 +50,19 @@ function init(){
 
 	// Set topics from database
 	set_topics_bar();
+}
+
+function update_dimensions(){
+	var new_width = get_best_canvas_width();
+	//var new_height = $("#container").width()-$("#location_axis").width()*2;
+	$("#canvas").width(new_width);
+	$("#time_axis").width(new_width);
+	width = new_width;
+	refresh_clusters_without_querying();
+}
+
+function get_best_canvas_width(){
+	return $("#container").width()-location_axis_width*2;
 }
 
 function displayEvents(){
@@ -100,6 +124,8 @@ function displayEvents(){
 }
 
 function displayAxis(minDate, maxDate){
+	x = d3.time.scale().range([0, width]);
+	xAxis = d3.svg.axis().scale(x).tickSize(-height).tickSubdivide(true);
 	x.domain([minDate, maxDate]);	
 	
 	time_axis.append("svg:g")
@@ -192,6 +218,12 @@ function refresh_clusters(){
 			displayEvents();
 		}
 	);
+}
+
+function refresh_clusters_without_querying(){
+	remove_clusters();
+	remove_time_axis();
+	displayEvents();	
 }
 
 function continent_filter(continent){
@@ -325,7 +357,6 @@ function set_continents_position(){
 }
 
 function remove_clusters(){
-	events = null
 	d3.selectAll("circle").transition().style("opacity", "0").remove();
 }
 

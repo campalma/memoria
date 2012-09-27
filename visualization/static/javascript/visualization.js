@@ -84,8 +84,11 @@ function displayEvents(){
 
 	lastClicked = null;
 
-	var minDate = to_utc(new Date(events[0].fields.date));
-	var maxDate = to_utc(new Date(events[0].fields.date));
+	if(events.length == 0)
+		return;
+
+	minDate = to_utc(new Date(events[0].fields.date));
+	maxDate = to_utc(new Date(events[0].fields.date));
 	
 	$.each(events, function(key, event){
 		var d = to_utc(new Date(event.fields.date));
@@ -139,6 +142,47 @@ function displayEvents(){
 	});
 }
 
+function draw_time_triangles(){
+	var hover_interval;
+	var left_arrow = time_axis.append("polygon")
+	   .attr("class", "time-triangle")
+	   .attr("points", 0+","+axisHeight/2+" 10,0 10,"+axisHeight)
+
+	right_arrow = time_axis.append("polygon")
+	   .attr("class", "time-triangle")
+	   .attr("points", width+","+axisHeight/2+" "+(width-10)+",0 "+(width-10)+","+axisHeight)
+
+	right_arrow.on("mouseover", function(){
+		arrow_animation(this);
+	});
+	right_arrow.on("click", function(){
+		$("#min_date")[0].value = maxDate.format("isoDateTime");
+		$("#max_date")[0].value = "";
+		minDate = maxDate;
+		refresh_clusters();
+	});
+
+	right_arrow.on("mouseout", function(){
+		arrow_animation_out(this);
+	});
+
+	left_arrow.on("mouseover", function(){
+		arrow_animation(this);
+	});
+
+	left_arrow.on("mouseout", function(){
+		arrow_animation_out(this);
+	});
+
+	left_arrow.on("click", function(){
+		$("#max_date")[0].value = minDate.format("isoDateTime");
+		$("#min_date")[0].value = "";
+		maxDate = minDate;
+		refresh_clusters();
+	});
+
+}
+
 function cluster_focus(element){
 	var el = d3.select(element);
 	el.transition().style("stroke-width", "3")
@@ -158,6 +202,24 @@ function displayAxis(minDate, maxDate){
 	   .attr("id", "time_svg")
 	   .attr("transform", "translate(0," + 0 + ")")
 	   .call(xAxis);
+
+	var labels = d3.selectAll("#time_svg > g")[0]
+
+	// Remove first and last labels of time
+	d3.select(labels[0]).remove();
+	d3.select(labels[labels.length - 1]).remove();
+
+	draw_time_triangles();
+}
+
+function arrow_animation(arrow){
+	d3.select(arrow).transition()
+	  .style("stroke", "black");
+}
+
+function arrow_animation_out(arrow){
+	d3.select(arrow).transition()
+	  .style("stroke", "grey");
 }
 
 function strokeColor(event){

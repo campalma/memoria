@@ -4,6 +4,7 @@
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
 		<title>Events Visualization</title>
 		<script type="text/javascript" src="/static/javascript/d3.v2.min.js"></script>
+		<script type="text/javascript" src="/static/javascript/date.format.js"></script>
 		<script type="text/javascript" src="/static/javascript/visualization.js"></script>
 		<script type="text/javascript" src="/static/javascript/jquery.js"></script>
 		<script type="text/javascript">
@@ -28,6 +29,8 @@
 	  					<div id="topics-row">
 						</div>
 						<input type="hidden" id="display_continent" name="display_continent" value="All" />
+						<input type="hidden" id="min_date" name="min_date" value="" />
+						<input type="hidden" id="max_date" name="max_date" value="" />
 					</form>
 					<svg id="location_axis"></svg>
 					<svg id="canvas"></svg>

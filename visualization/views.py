@@ -21,7 +21,6 @@ def visualize(request):
 # Ajax query: get last 50 news
 def clusters_query(request):
 	excluded = Topic.get_excluded_topics(request.GET);
-	print excluded
 	clusters = Cluster.objects.all()
 	for e in excluded:
 		clusters = clusters.exclude(topic=e)
@@ -30,6 +29,11 @@ def clusters_query(request):
 		continent_display = None
 	if(continent_display!="All"):
 		clusters = clusters.filter(continent_location__name=continent_display)
+	if(request.GET["min_date"]!=""):
+		clusters = clusters.exclude(date__lte = request.GET["min_date"])
+		print request.GET["min_date"]
+	if(request.GET["max_date"]!=""):
+		clusters = clusters.exclude(date__gte = request.GET["max_date"])
 	clusters = sorted(clusters.order_by("-date")[:CLUSTERS_TO_VISUALIZE], key=lambda x:x.relevancy, reverse=True)
 	json = serializers.serialize("json", clusters)
 	return HttpResponse(json, mimetype='application/json')

@@ -61,3 +61,7 @@ img{
 	height: 10%;
 	overflow-y: scroll;
 }
+
+.time-triangle{
+	fill: grey;
+}

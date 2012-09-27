@@ -54,6 +54,7 @@ function init(){
 
 	// Get clusters
 	refresh_clusters();
+	update_dimensions();
 }
 
 function update_dimensions(){
@@ -63,7 +64,7 @@ function update_dimensions(){
 	$("#canvas").height(new_height);
 	$("#time_axis").width(new_width);
 	$("#location_axis").height(new_height);
-	$("#info").height(new_height);
+	$("#info").height(new_height+axisHeight);
 	width = new_width;
 	height = new_height;
 	set_continent_axis();
@@ -72,11 +73,11 @@ function update_dimensions(){
 }
 
 function get_best_canvas_width(){
-	return $("#container").width()-location_axis_width*2;
+	return $(window).width()/3*1.9-location_axis_width*2;
 }
 
 function get_best_canvas_height(){
-	return $(window).height()-$("#topics-row").height()*2-axisHeight*2;
+	return $(window).height()-$("#topics-row").height()*3-axisHeight*2;
 }
 
 function displayEvents(){
@@ -116,15 +117,7 @@ function displayEvents(){
 		   				 .attr("cy", getLocationPosition(event.fields.continent_location))
 		   				 .attr("r", Math.log(event.fields.relevancy)*5)
 		   				 .attr("class", localAttribute)
-						 .style("fill", article_color)
-						 .style("stroke-width", 2)
-						 .style("stroke", strokeColor(event))
-						 .style("opacity", "0")
-						 .transition()
-						 .style("opacity", 100)
-						 .duration(1500)
-						 .each("end", function(){		   				 
-						 	$("#"+key).click(function(){
+		   				 .on("click", function(){
 		   				 	if(lastClicked!=null){
 		   				 		$(lastClicked).css("stroke", strokeColor(events[$(lastClicked).attr("id")]))
 		   				 	}
@@ -133,8 +126,27 @@ function displayEvents(){
 
 		   				 	get_cluster_locations(events[this.id].pk);
 		   				 	get_cluster_info(events[this.id].pk);
-						 });});
+						 })
+						 .attr("onmouseover", "cluster_focus(this)")
+						 .attr("onmouseout", "cluster_unfocus(this)")
+						 .style("fill", article_color)
+						 .style("stroke-width", 2)
+						 .style("stroke", strokeColor(event))
+						 .style("opacity", "0")
+						 .transition()
+						 .style("opacity", 100)
+						 .duration(1500);
 	});
+}
+
+function cluster_focus(element){
+	var el = d3.select(element);
+	el.transition().style("stroke-width", "3")
+}
+
+function cluster_unfocus(element){
+	var el = d3.select(element);
+	el.transition().style("stroke-width", "2")
 }
 
 function displayAxis(minDate, maxDate){
@@ -153,7 +165,7 @@ function strokeColor(event){
 		return "";
 	}
 	else{
-		return "black";
+		return "#333333";
 	}
 }
 
@@ -173,15 +185,6 @@ function getLocationPosition(continents_array){
 function draw_location_separations(){
 	d3.selectAll(".separation").remove();
 	var slotSize = height/Object.size(continents_position);
-	// $.each(continents_position, function(key, value){
-	// 	svg.append("line")
-	// 	   .attr("class", "separation")
-	// 	   .attr("x1", "0")
-	// 	   .attr("y1", slotSize*(value+1)+"")
-	// 	   .attr("x2", width+"")
-	// 	   .attr("y2", slotSize*(value+1)+"")
-	// 	   .style("stroke", "grey");
-	// });
 	$.each(continents_position, function(key,value){
 		svg.append("rect")
 		   .attr("id", "rect-"+value)
@@ -254,12 +257,16 @@ function refresh_clusters(){
 	remove_clusters();
 	remove_time_axis();
 	params = $("#topics-form").serializeArray();
-	$.get("/api/clustersquery", params, 
-		function(data){
+	$.ajax({
+		url: "/api/clustersquery",
+		async: false,
+		type: "GET",
+		data: params,
+		success: function(data){
 			events = data;
 			displayEvents();
 		}
-	);
+	});
 }
 
 function refresh_clusters_without_querying(){
@@ -373,11 +380,12 @@ function get_cluster_info(id){
 		url: "/api/clusternewsquery/"+id,
 		dataType: "json",
 		success: function(data){
-
-			$("#news")[0].innerHTML = "</br>";
-			$("#image")[0].innerHTML = "<img src='"+events[$(lastClicked).attr("id")].fields.image+"'/>";
+			d3.select("#image > img").remove();
+			d3.select("#image").append("img")
+							   .attr("src", events[$(lastClicked).attr("id")].fields.image)
+			$("#news").text("")
 			$.each(data, function(key, article){
-				$("#news").append(article.fields.published_date.replace("T", " ")+" <a href='"+article.fields.url+"'>"+article.fields.title +" ["+article.fields.publisher+"]"+"</a><br/>");
+				$("#news").append(article.fields.published_date.replace("T", " ")+" <a target='blank' href='"+article.fields.url+"'>"+article.fields.title +" ["+article.fields.publisher+"]"+"</a><br/>");
 			});
 		}
 	});

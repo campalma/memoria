@@ -29,7 +29,6 @@ function init(){
 	});
 	
 	width = get_best_canvas_width();
-
 	// Set topics from database
 	set_topics_bar();
 
@@ -174,31 +173,58 @@ function getLocationPosition(continents_array){
 function draw_location_separations(){
 	d3.selectAll(".separation").remove();
 	var slotSize = height/Object.size(continents_position);
-	$.each(continents_position, function(key, value){
-		svg.append("line")
+	// $.each(continents_position, function(key, value){
+	// 	svg.append("line")
+	// 	   .attr("class", "separation")
+	// 	   .attr("x1", "0")
+	// 	   .attr("y1", slotSize*(value+1)+"")
+	// 	   .attr("x2", width+"")
+	// 	   .attr("y2", slotSize*(value+1)+"")
+	// 	   .style("stroke", "grey");
+	// });
+	$.each(continents_position, function(key,value){
+		svg.append("rect")
+		   .attr("id", "rect-"+value)
 		   .attr("class", "separation")
-		   .attr("x1", "0")
-		   .attr("y1", slotSize*(value+1)+"")
-		   .attr("x2", width+"")
-		   .attr("y2", slotSize*(value+1)+"")
+		   .attr("fill", "white")
+		   .attr("x", "0")
+		   .attr("y", slotSize*(value)+"")
+		   .attr("width", width+"")
+		   .attr("height", slotSize)
 		   .style("stroke", "grey");
 	});
 }
 
 function set_continent_axis(){
-	d3.selectAll("#location_axis > text").remove();
+	d3.selectAll("#location_axis > a").remove();
 	var slotSize = height/Object.size(continents_position);
 	$.each(continents_position, function(key, value){
 		var lol = slotSize*(value+1)-30;
-		location_axis.append("text")
-					 .attr("class", "continent")	
+		location_axis.append("a")
+					 .attr("xlink:href", "#")
+					 .attr("class", "continent")
+					 .append("text")
+					 .attr("onmouseover","rect_highlight(this)")
+					 .attr("onmouseout","undo_rect_highlight(this)")
+					 .attr("fill", "#08C")
 					 .attr("x", "0")
 					 .attr("y", lol)
-					 .attr("fill", "black")
 					 .attr("transform", "rotate(-90,25,"+lol+")")
 					 .attr("onclick", "continent_filter(this)")
 					 .text(key);
 	});
+}
+
+function rect_highlight(continent_element){
+	d3.select("#rect-"+continents_position[$(continent_element).text()])
+
+	  .attr("fill", "#F0F0A8")
+}
+
+function undo_rect_highlight(continent_element){
+	d3.select("#rect-"+continents_position[$(continent_element).text()])
+
+	  .attr("fill", "white")	
 }
 
 function getTopicColor(topic){
@@ -266,18 +292,22 @@ function continent_filter_animation(continent){
 
 	// Move lines into its respective side
 	d3.selectAll(".separation").each(function(){
-		var line = d3.select(this);
-		var line_position = parseInt(line.attr("y2"));
-		if(text_position < line_position){
-			var new_position = height+5;
+		var rect = d3.select(this);
+		var rect_position = parseInt(rect.attr("y"));
+		var first = true;
+		if(text_position < rect_position){
+			var new_position = height+100;
+			rect.transition()
+			    .attr("y", new_position)
+			    .duration(1500);
 		}
 		else{
-			var new_position = -5;
+		rect.transition()
+		    .attr("y", 0)
+		    .attr("height", height)
+		    .duration(1500);				
 		}
-			line.transition()
-			    .attr("y1", new_position)
-			    .attr("y2", new_position)
-			    .duration(1500);
+
 	});
 
 	continent.transition()
@@ -286,11 +316,14 @@ function continent_filter_animation(continent){
 			 	function(){
 				 	refresh_clusters(); 
 				 	d3.select(this).transition().style("kerning", "10")
-				 	d3.select("#location_axis").append("text")
+				 	d3.select("#location_axis").append("a")
+				 							   .attr("xlink:href", "#")
+				 							   .append("text")
+				 							   .attr("fill", "#08C")
 				 							   .attr("x", 0)
 				 							   .attr("y", height-10)
 				 							   .attr("onclick", "back_to_all_continents()")
-				 							   .text("All");
+				 							   .text("Back");
 				 });
 		
 }
@@ -308,6 +341,7 @@ function get_continents(){
 		url: "/api/continents",
 		dataType: "json",
 		data: continents,
+		async: false,
 		success: function(data){
 			continents = data;
 			set_continents_position();

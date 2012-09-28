@@ -53,6 +53,7 @@ function init(){
 	get_continents();
 
 	// Get clusters
+	remove_clusters("fade");
 	refresh_clusters();
 	update_dimensions();
 }
@@ -159,7 +160,8 @@ function draw_time_triangles(){
 		$("#min_date")[0].value = maxDate.format("isoDateTime");
 		$("#max_date")[0].value = "";
 		minDate = maxDate;
-		refresh_clusters();
+		remove_clusters("left");
+		refresh_clusters();			
 	});
 
 	right_arrow.on("mouseout", function(){
@@ -177,8 +179,10 @@ function draw_time_triangles(){
 	left_arrow.on("click", function(){
 		$("#max_date")[0].value = minDate.format("isoDateTime");
 		$("#min_date")[0].value = "";
-		maxDate = minDate;
-		refresh_clusters();
+		d3.selectAll("circle").transition().duration(2000).attr("cx", width*2);
+			maxDate = minDate;
+			remove_clusters("right");
+			refresh_clusters();			
 	});
 
 }
@@ -312,11 +316,11 @@ function topic_filter(topic_span){
 		$(topic_span).addClass("not-selected");
 		$("#"+topic_id+"_check")[0].checked = false;
 	}
+	remove_clusters("fade");
 	refresh_clusters();
 }
 
 function refresh_clusters(){
-	remove_clusters();
 	remove_time_axis();
 	params = $("#topics-form").serializeArray();
 	$.ajax({
@@ -332,7 +336,7 @@ function refresh_clusters(){
 }
 
 function refresh_clusters_without_querying(){
-	remove_clusters();
+	remove_clusters("fade");
 	remove_time_axis();
 	displayEvents();	
 }
@@ -347,7 +351,7 @@ function continent_filter(continent){
 function continent_filter_animation(continent){
 
 	text_position = parseInt(continent.attr("y"));
-	remove_clusters();
+	remove_clusters("fade");
 	// Hide another continents
 	d3.selectAll(".continent").each(function(){
 		continent_text = d3.select(this);
@@ -383,6 +387,7 @@ function continent_filter_animation(continent){
 			 .attr("x", text_position-300)
 			 .duration(1500).each("end", 
 			 	function(){
+			 		remove_clusters("fade");
 				 	refresh_clusters(); 
 				 	d3.select(this).transition().style("kerning", "10")
 				 	d3.select("#location_axis").append("a")
@@ -402,6 +407,7 @@ function back_to_all_continents(){
 	draw_location_separations();
 	set_continent_axis();
 	d3.select("#display_continent").attr("value", "All");
+	remove_clusters("fade");
 	refresh_clusters();
 }
 
@@ -476,8 +482,22 @@ function set_continents_position(){
 	continents_position["Unknown"] = position;
 }
 
-function remove_clusters(){
-	d3.selectAll("circle").transition().style("opacity", "0").remove();
+function remove_clusters(transition){
+	console.log(transition);
+	switch(transition){
+	case "fade":
+		d3.selectAll("circle").transition().style("opacity", "0").remove();
+		break;
+	case "left":
+		d3.selectAll("circle").transition().duration(2000).attr("cx", -width).remove();
+		break;
+	case "right":
+		d3.selectAll("circle").transition().duration(2000).attr("cx", width*2).remove();
+		break;
+	default:	
+		d3.selectAll("circle").transition().style("opacity", "0").remove();
+	}
+
 }
 
 function remove_time_axis(){

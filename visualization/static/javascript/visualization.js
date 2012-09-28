@@ -341,7 +341,7 @@ function refresh_clusters(){
 	params = $("#topics-form").serializeArray();
 	$.ajax({
 		url: "/api/clustersquery",
-		async: false,
+		async: true,
 		type: "GET",
 		data: params,
 		success: function(data){

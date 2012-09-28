@@ -11,6 +11,7 @@ var events, topics, continents;
 var lastClicked = null;
 var continents_position = {};
 var id;
+var refresh_id;
 
 // Object extension to know keys size
 Object.size = function(obj) {
@@ -333,7 +334,8 @@ function topic_filter(topic_span){
 		$("#"+topic_id+"_check")[0].checked = false;
 	}
 	remove_clusters("fade");
-	refresh_clusters();
+	clearTimeout(refresh_id);
+	refresh_id = setTimeout(refresh_clusters, 1000);
 }
 
 function refresh_clusters(){

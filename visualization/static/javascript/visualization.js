@@ -212,8 +212,24 @@ function displayAxis(minDate, maxDate){
 	// Remove first and last labels of time
 	d3.select(labels[0]).remove();
 	d3.select(labels[labels.length - 1]).remove();
-
+	display_time_dot_lines();
 	draw_time_triangles();
+}
+
+function display_time_dot_lines(){
+
+	var labels = d3.selectAll("#time_svg > g");
+	$.each(labels[0], function(key, value){
+		var xforms = d3.select(value).attr("transform");
+		var parts  = /translate\(\s*([^\s,)]+)[ ,]([^\s,)]+)/.exec(xforms);
+		var firstX = parts[1];
+		svg.append("line")
+		   .attr("class", "time-dot-line")
+		   .attr("x1", firstX)
+		   .attr("y1", 0)
+		   .attr("x2", firstX)
+		   .attr("y2", height)
+	});
 }
 
 function arrow_animation(arrow){
@@ -483,19 +499,22 @@ function set_continents_position(){
 }
 
 function remove_clusters(transition){
-	console.log(transition);
 	switch(transition){
 	case "fade":
 		d3.selectAll("circle").transition().style("opacity", "0").remove();
+		d3.selectAll("line").transition().style("opacity", "0").remove();
 		break;
 	case "left":
 		d3.selectAll("circle").transition().duration(2000).attr("cx", -width).remove();
+		d3.selectAll("line").transition().duration(2000).attr("x1", -width).attr("x2", -width).remove();
 		break;
 	case "right":
 		d3.selectAll("circle").transition().duration(2000).attr("cx", width*2).remove();
+		d3.selectAll("line").transition().duration(2000).attr("x1", width*2).attr("x2", width*2).remove();
 		break;
 	default:	
 		d3.selectAll("circle").transition().style("opacity", "0").remove();
+		d3.selectAll("line").transition().style("opacity", "0").remove();
 	}
 
 }
